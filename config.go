@@ -21,6 +21,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/forestjohnsonpeoplenet/influxStyleEnvOverride"
 )
 
 // Configuration definition
@@ -139,6 +141,16 @@ func ReadConfig(cfgFile string) *BurrowConfig {
 		log.Fatalf("Failed to parse gcfg data: %s", err)
 		os.Exit(1)
 	}
+
+	var cfgInterface interface{}
+	cfgInterface = cfg
+	err = influxStyleEnvOverride.ApplyInfluxStyleEnvOverrides("BURROW", &cfgInterface)
+
+	if err != nil {
+		log.Fatalf("Failed to apply configuration overrides: %s", err)
+		os.Exit(1)
+	}
+
 	return &cfg
 }
 
