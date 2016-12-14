@@ -11,6 +11,7 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"gopkg.in/gcfg.v1"
@@ -18,6 +19,7 @@ import (
 	"net"
 	"net/url"
 	"os"
+	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
@@ -142,14 +144,19 @@ func ReadConfig(cfgFile string) *BurrowConfig {
 		os.Exit(1)
 	}
 
-	var cfgInterface interface{}
-	cfgInterface = cfg
-	err = influxStyleEnvOverride.ApplyInfluxStyleEnvOverrides("BURROW", &cfgInterface)
+	err = influxStyleEnvOverride.ApplyInfluxStyleEnvOverrides("BURROW", reflect.ValueOf(&cfg))
 
 	if err != nil {
 		log.Fatalf("Failed to apply configuration overrides: %s", err)
 		os.Exit(1)
 	}
+
+	jsonBytes, err := json.MarshalIndent(cfg, "", "  ")
+	if err != nil {
+		log.Fatalf("Unable to display configuration object as JSON: %s", err)
+		os.Exit(1)
+	}
+	log.Printf("Configuration Object:\n\n%v\n", string(jsonBytes))
 
 	return &cfg
 }
