@@ -19,4 +19,4 @@ WORKDIR /var/tmp/burrow
 
 ADD runtime.sh $GOPATH/bin/burrow
 
-CMD ["/bin/bash" "$GOPATH/bin/burrow/runtime.sh"]
+CMD ["/bin/sh", "$GOPATH/bin/burrow/runtime.sh"]

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 rm -f /var/tmp/burrow/burrow.pid
 
