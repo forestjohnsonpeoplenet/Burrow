@@ -15,9 +15,11 @@ RUN cd $GOPATH/src/github.com/linkedin/Burrow && go install && mv $GOPATH/bin/Bu
 
 ADD docker-config /etc/burrow
 
+RUN ls /etc/burrow
+
 WORKDIR /var/tmp/burrow
 
 ADD burrow_runtime.sh /
-RUN chmod +x /burrow_runtime.sh
+RUN chmod +x /burrow_runtime.sh && sed -ri 's/\r//' /burrow_runtime.sh 
 
 CMD ["/bin/sh", "/burrow_runtime.sh"]
