@@ -17,6 +17,7 @@ ADD docker-config /etc/burrow
 
 WORKDIR /var/tmp/burrow
 
-ADD runtime.sh $GOPATH/bin/burrow
+ADD burrow_runtime.sh /
+RUN chmod +x /burrow_runtime.sh
 
-CMD ["/bin/sh", "$GOPATH/bin/burrow/runtime.sh"]
+CMD ["/bin/sh", "/burrow_runtime.sh"]
