@@ -102,11 +102,11 @@ func burrowMain() int {
 
 	// Start Kafka clients and Zookeepers for each cluster
 	appContext.Clusters = make(map[string]*KafkaCluster, len(appContext.Config.Kafka))
-	for cluster, _ := range appContext.Config.Kafka {
+	for cluster, clusterconfig := range appContext.Config.Kafka {
 		log.Infof("Starting Zookeeper client for cluster %s", cluster)
 		zkconn, err := NewZookeeperClient(appContext, cluster)
 		if err != nil {
-			if cluster.TolerateConnectionFailure {
+			if clusterconfig.TolerateConnectionFailure {
 				log.Warnf("Cannot start Zookeeper client for cluster %s: %v", cluster, err)
 				continue
 			} else {
@@ -119,7 +119,7 @@ func burrowMain() int {
 		log.Infof("Starting Kafka client for cluster %s", cluster)
 		client, err := NewKafkaClient(appContext, cluster)
 		if err != nil {
-			if cluster.TolerateConnectionFailure {
+			if clusterconfig.TolerateConnectionFailure {
 				log.Warnf("Cannot start Kafka client for cluster %s: %v", cluster, err)
 				continue
 			} else {
