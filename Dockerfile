@@ -14,7 +14,6 @@ RUN cd $GOPATH/src/github.com/linkedin/Burrow && gpm install
 ADD . $GOPATH/src/github.com/linkedin/Burrow
 
 RUN cd $GOPATH/src/github.com/linkedin/Burrow \
- && gpm install \
  && go install \
  && mv $GOPATH/bin/Burrow $GOPATH/bin/burrow \
  && apk del git curl wget
