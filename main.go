@@ -24,9 +24,8 @@ import (
 )
 
 type KafkaCluster struct {
-	Client                    *KafkaClient
-	Zookeeper                 *ZookeeperClient
-	TolerateConnectionFailure bool
+	Client    *KafkaClient
+	Zookeeper *ZookeeperClient
 }
 
 type StormCluster struct {
@@ -102,11 +101,11 @@ func burrowMain() int {
 
 	// Start Kafka clients and Zookeepers for each cluster
 	appContext.Clusters = make(map[string]*KafkaCluster, len(appContext.Config.Kafka))
-	for cluster, clusterconfig := range appContext.Config.Kafka {
+	for cluster, kafkaClusterConfig := range appContext.Config.Kafka {
 		log.Infof("Starting Zookeeper client for cluster %s", cluster)
 		zkconn, err := NewZookeeperClient(appContext, cluster)
 		if err != nil {
-			if clusterconfig.TolerateConnectionFailure {
+			if kafkaClusterConfig.TolerateConnectionFailure {
 				log.Warnf("Cannot start Zookeeper client for cluster %s: %v", cluster, err)
 				continue
 			} else {
@@ -119,7 +118,7 @@ func burrowMain() int {
 		log.Infof("Starting Kafka client for cluster %s", cluster)
 		client, err := NewKafkaClient(appContext, cluster)
 		if err != nil {
-			if clusterconfig.TolerateConnectionFailure {
+			if kafkaClusterConfig.TolerateConnectionFailure {
 				log.Warnf("Cannot start Kafka client for cluster %s: %v", cluster, err)
 				continue
 			} else {
