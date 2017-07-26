@@ -52,7 +52,7 @@ type BurrowConfig struct {
 		LockPath string   `gcfg:"lock-path"`
 	}
 	Kafka map[string]*struct {
-		TolerateConnectionFailure bool
+		TolerateConnectionFailure bool     `gcfg:"tolerate-connection-failure"`
 		Brokers                   []string `gcfg:"broker"`
 		BrokerPort                int      `gcfg:"broker-port"`
 		Zookeepers                []string `gcfg:"zookeeper"`
