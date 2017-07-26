@@ -13,18 +13,20 @@ package main
 import (
 	"flag"
 	"fmt"
-	log "github.com/cihub/seelog"
-	"github.com/samuel/go-zookeeper/zk"
 	"os"
 	"os/signal"
 	"runtime"
 	"syscall"
 	"time"
+
+	log "github.com/cihub/seelog"
+	"github.com/samuel/go-zookeeper/zk"
 )
 
 type KafkaCluster struct {
-	Client    *KafkaClient
-	Zookeeper *ZookeeperClient
+	Client                    *KafkaClient
+	Zookeeper                 *ZookeeperClient
+	TolerateConnectionFailure bool
 }
 
 type StormCluster struct {
@@ -104,16 +106,26 @@ func burrowMain() int {
 		log.Infof("Starting Zookeeper client for cluster %s", cluster)
 		zkconn, err := NewZookeeperClient(appContext, cluster)
 		if err != nil {
-			log.Criticalf("Cannot start Zookeeper client for cluster %s: %v", cluster, err)
-			return 1
+			if cluster.TolerateConnectionFailure {
+				log.Warnf("Cannot start Zookeeper client for cluster %s: %v", cluster, err)
+				continue
+			} else {
+				log.Criticalf("Cannot start Zookeeper client for cluster %s: %v", cluster, err)
+				return 1
+			}
 		}
 		defer zkconn.Stop()
 
 		log.Infof("Starting Kafka client for cluster %s", cluster)
 		client, err := NewKafkaClient(appContext, cluster)
 		if err != nil {
-			log.Criticalf("Cannot start Kafka client for cluster %s: %v", cluster, err)
-			return 1
+			if cluster.TolerateConnectionFailure {
+				log.Warnf("Cannot start Kafka client for cluster %s: %v", cluster, err)
+				continue
+			} else {
+				log.Criticalf("Cannot start Kafka client for cluster %s: %v", cluster, err)
+				return 1
+			}
 		}
 		defer client.Stop()
 
